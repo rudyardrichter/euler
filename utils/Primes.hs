@@ -23,6 +23,9 @@ millerRabin k n = if even n
     then return (n == 2)
     else witnesses k n >>= return . or . map (test n)
 
+witnesses :: Int -> Integer -> IO [Integer]
+witnesses k n = newStdGen >>= return . take k . randomRs (2, n - 2)
+
 test :: Integer -> Integer -> Bool
 test n w = w' == 1 || squareTest w'
   where
@@ -33,12 +36,14 @@ test n w = w' == 1 || squareTest w'
     s = until (\power -> testBit (n - 1) power) succ 0
     d = (n - 1) `div` (2^s)
 
-witnesses :: Int -> Integer -> IO [Integer]
-witnesses k n = newStdGen >>= return . take k . randomRs (2, n - 2)
+-----------------------------------------------------------------------------
+-- Random prime generation
+-- (originally for use with RSA)
 
 rndPrime :: Int -> IO Integer
 rndPrime bits = doMUntil isPrime candidate
   where
+    -- (.|. 1) makes the candidate odd if it wasn't already
     candidate = fmap (.|. 1) $ randomRIO (lower, upper)
     lower     = 2 ^ (bits - 1)
     upper     = 2 ^ bits - 1
@@ -52,7 +57,11 @@ rndPrimes bits = do
 doUntil :: (Monad m) => (a -> Bool) -> m a -> m a
 doUntil p mx = loop
   where
-    loop = mx >>= \x -> if p x then return x else loop
+    loop = do
+    x <- mx
+    if p x
+        then return x
+        else loop
 
 doMUntil :: (Monad m) => (a -> m Bool) -> m a -> m a
 doMUntil mp mx = loop
@@ -99,7 +108,7 @@ modExp b e m = loop b e 1
         y' = y `div` 2
 
 -----------------------------------------------------------------------------
--- Factorization
+-- Prime generation, factorization
 
 primes :: [Integer]
 primes = 2 : sieve [3,5..]
