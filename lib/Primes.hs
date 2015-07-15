@@ -6,7 +6,7 @@ module Primes (
     divisors,
     factorize,
     isPrime,
-    millerRabin,
+    isPrimeMR,
     modExp,
     primePowers,
     primesArray,
@@ -65,8 +65,7 @@ gcde a b = (sign * r, sign * x, sign * y)
         | r2 == 0   = (r1, x1, y1)
         | otherwise = loop (r2, x2, y2) (r, x1 - q * x2, y1 - q * y2)
       where
-        q = r1 `div` r2
-        r = r1 `mod` r2
+        (q, r) = quotRem r1 r2
 
 -- compute b ^ e (mod m)
 modExp :: (Integral a, Integral b) => a -> b -> a -> a
