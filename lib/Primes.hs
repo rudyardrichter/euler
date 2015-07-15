@@ -1,11 +1,16 @@
+-- module Primes
+-- Functions for primality testing, prime generation, factorization, and
+-- (tangentially) modular arithmetic.
+
 module Primes (
     divisors,
     factorize,
     isPrime,
     millerRabin,
+    modExp,
     primePowers,
-    primes,
-    primesTo
+    primesArray,
+    primesTo,
     ) where
 
 import Control.Monad
@@ -19,8 +24,8 @@ import System.Random
 -----------------------------------------------------------------------------
 -- Primality testing
 
-isPrime :: Integer -> IO Bool
-isPrime = millerRabin 50
+isPrimeMR :: Integer -> IO Bool
+isPrimeMR = millerRabin 50
 
 millerRabin :: Int -> Integer -> IO Bool
 millerRabin k n = if even n
@@ -44,14 +49,14 @@ test n w = w' == 1 || squareTest w'
 -- Modular functions
 
 -- calculate the inverse of n (mod m)
-modInv :: Integer -> Integer -> Integer
-modInv n m = let (r,x,_) = gcde n m in
+modInv :: (Integral a) => a -> a -> a
+modInv n m = let (r, x, _) = gcde n m in
     if r == 1
         then x `mod` m
-        else error $ (show n) ++ " has no inverse mod " ++ (show m)
+        else -1
 
 -- extended Euclidean algorithm
-gcde :: Integer -> Integer -> (Integer, Integer, Integer)
+gcde :: (Integral a) => a -> a -> (a, a, a)
 gcde a b = (sign * r, sign * x, sign * y)
   where
     sign = signum r
@@ -64,6 +69,7 @@ gcde a b = (sign * r, sign * x, sign * y)
         r = r1 `mod` r2
 
 -- compute b ^ e (mod m)
+modExp :: (Integral a, Integral b) => a -> b -> a -> a
 modExp b e m = loop b e 1
   where
     loop x y n
@@ -78,7 +84,7 @@ modExp b e m = loop b e 1
 -- Primes generation, factorization
 
 -- from the Haskell wiki page on primes
-primesArray :: Integer -> UArray Integer Bool
+primesArray :: Int -> UArray Int Bool
 primesArray bound = runSTUArray $ do
     let m = (pred bound) `div` 2
     let r = (`div` 2) . floor . sqrt $ ((fromIntegral bound + 1) :: Double)
@@ -90,24 +96,24 @@ primesArray bound = runSTUArray $ do
                 writeArray sieve c False
     return sieve
 
-primesTo :: Integer -> [Integer]
+primesTo :: Int -> [Int]
 primesTo = (2:) . map (succ . (* 2) . fst) . filter snd . assocs . primesArray
 
--- slow
-primes :: [Integer]
-primes = 2 : sieve [3,5..]
+isPrime :: Int -> Bool
+isPrime n
+    | n == 1    = False
+    | even n    = n == 2
+    | otherwise = not
+                . any divisor
+                . primesTo
+                . floor
+                . sqrt
+                . fromIntegral
+                $ n
   where
-    sieve (p:ns)
-        | null ns   = [p]
-        | otherwise = p : sieve (ns `minus` [p * p, p * p + 2 * p..])
-    minus l1@(x:xs) l2@(y:ys)
-        | null l1   = []
-        | null l2   = l1
-        | x > y     = minus l1 ys
-        | x < y     = x : minus xs l2
-        | otherwise = minus xs l2
+    divisor x = n `mod` x == 0
 
-factorize :: Integer -> [Integer]
+factorize :: (Integral a) => a -> [a]
 factorize = loop (2:[3,5..])
   where
     loop (d:ds) n
@@ -117,7 +123,7 @@ factorize = loop (2:[3,5..])
       where
         (q, r) = quotRem n d
 
-primePowers :: Integer -> [(Integer, Int)]
+primePowers :: (Integral a) => a -> [(a, Int)]
 primePowers n = [(head ds, length ds) | ds <- group $ loop (2:[3,5..]) n]
   where
     loop (d:ds) n
@@ -127,7 +133,7 @@ primePowers n = [(head ds, length ds) | ds <- group $ loop (2:[3,5..]) n]
       where
         (q, r) = quotRem n d
 
-divisors :: Integer -> [Integer]
+divisors :: (Integral a) => a -> [a]
 divisors = map product
          . init
          . sequence
