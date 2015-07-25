@@ -9,6 +9,7 @@ module Primes (
     isPrimeMR,
     modExp,
     primePowers,
+    primes,
     primesArray,
     primesTo,
     ) where
@@ -20,6 +21,8 @@ import Data.Array.Unboxed
 import Data.Bits
 import Data.List (group)
 import System.Random
+
+import Euler (divisible)
 
 -----------------------------------------------------------------------------
 -- Primality testing
@@ -98,19 +101,32 @@ primesArray bound = runSTUArray $ do
 primesTo :: Int -> [Int]
 primesTo = (2:) . map (succ . (* 2) . fst) . filter snd . assocs . primesArray
 
+-- also from the Haskell wiki
+primes :: [Int]
+primes = 2 : oddPrimes
+  where
+    oddPrimes = 3 : sieve oddPrimes 3 []
+    sieve (p:ps) n fs = arrayPrimes ++ sieve ps (p * p) ((p, 0) : divSnd fs)
+      where
+        arrayPrimes = map ((+ n) . (* 2) . fst) . filter snd $ assocs ar
+        divSnd = map (\(a, b) -> (a, (b - q) `rem` a))
+        q = (p * p - n) `div` 2
+        ar :: UArray Int Bool
+        ar = accumArray (\_ _-> False) True (1, q - 1) as
+        -- accumArray combines values with the same index (here, to False)
+        as = [(i, ()) | (a, b) <- fs, i <- [a + b, a + a + b..q]]
+
 isPrime :: Int -> Bool
 isPrime n
     | n == 1    = False
     | even n    = n == 2
     | otherwise = not
-                . any divisor
+                . any (n `divisible`)
                 . primesTo
                 . floor
                 . sqrt
                 . fromIntegral
                 $ n
-  where
-    divisor x = n `mod` x == 0
 
 factorize :: (Integral a) => a -> [a]
 factorize = loop (2:[3,5..])

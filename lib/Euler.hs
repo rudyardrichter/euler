@@ -3,11 +3,11 @@ module Euler where
 import Data.Char (digitToInt, intToDigit)
 import Data.List (permutations, sort)
 
-(&&&) :: (a -> Bool) -> (a -> Bool) -> a -> Bool
-(&&&) f g x = f x && g x
+(&.&) :: (a -> Bool) -> (a -> Bool) -> a -> Bool
+(&.&) f g x = f x && g x
 
-(|||) :: (a -> Bool) -> (a -> Bool) -> a -> Bool
-(|||) f g x = f x || g x
+(|.|) :: (a -> Bool) -> (a -> Bool) -> a -> Bool
+(|.|) f g x = f x || g x
 
 digits :: Int -> [Int]
 digits = map digitToInt . show
