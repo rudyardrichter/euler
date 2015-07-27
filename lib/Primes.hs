@@ -22,7 +22,7 @@ import Data.Bits
 import Data.List (group)
 import System.Random
 
-import Euler (divisible)
+import Euler ((|.|), divisible)
 
 -----------------------------------------------------------------------------
 -- Primality testing
@@ -31,17 +31,16 @@ isPrimeMR :: Integer -> IO Bool
 isPrimeMR = millerRabin 50
 
 millerRabin :: Int -> Integer -> IO Bool
-millerRabin k n = if even n
-    then return (n == 2)
-    else witnesses k n >>= return . or . map (test n)
+millerRabin k n
+    | even n    = return (n == 2)
+    | otherwise = witnesses k n >>= return . or . map (test n)
 
 witnesses :: Int -> Integer -> IO [Integer]
 witnesses k n = newStdGen >>= return . take k . randomRs (2, n - 2)
 
 test :: Integer -> Integer -> Bool
-test n w = w' == 1 || squareTest w'
+test n w = ((== 1) |.| squareTest) $ modExp w d n
   where
-    w' = modExp w d n
     squareTest = any (== n - 1) . take s . iterate modSquare
     modSquare = ((`mod` n) . (^ 2))
     -- find s and d : (n - 1) == d * 2^s
@@ -53,10 +52,11 @@ test n w = w' == 1 || squareTest w'
 
 -- calculate the inverse of n (mod m)
 modInv :: (Integral a) => a -> a -> a
-modInv n m = let (r, x, _) = gcde n m in
-    if r == 1
-        then x `mod` m
-        else -1
+modInv n m
+    | r == 1    = x `mod` m
+    | otherwise = -1
+  where
+    (r, x, _) = gcde n m
 
 -- extended Euclidean algorithm
 gcde :: (Integral a) => a -> a -> (a, a, a)
@@ -76,7 +76,7 @@ modExp b e m = loop b e 1
   where
     loop x y n
         | y == 0 = n
-        | mod y 2 == 0 = loop x' y' n
+        | even y = loop x' y' n
         | otherwise = loop x' y' (x * n `mod` m)
       where
         x' = x * x `mod` m

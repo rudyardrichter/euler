@@ -1,4 +1,4 @@
+import Euler ((|.|), divisible)
+
 main :: IO ()
-main = print . sum . filter multiple3or5 $ [1..999]
-  where
-    multiple3or5 x = x `mod` 3 == 0 || x `mod` 5 == 0
+main = print . sum . filter ((`divisible` 3) |.| (`divisible` 5)) $ [1..999]
