@@ -29,6 +29,10 @@ first f = head . filter f
 hexagonal :: [Int]
 hexagonal = scanl1 (+) [1, 5..]
 
+-- How many elements of a list satisfy the predicate.
+howMany :: (a -> Bool) -> [a] -> Int
+howMany f = length . filter f
+
 -- Tests whether a number is pentagonal.
 isPentagonal :: Int -> Bool
 isPentagonal n = isIntegral x && round x `mod` 6 == 5
@@ -69,6 +73,9 @@ splitBy p xs = case dropWhile p xs of
     xs' -> x : splitBy p xs''
       where
         (x, xs'') = break p xs'
+
+triangulars :: [Int]
+triangulars = scanl1 (+) [1..]
 
 -- The reverse of digits; converts a list of digits to an Int.
 undigits :: [Int] -> Int

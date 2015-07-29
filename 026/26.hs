@@ -10,7 +10,4 @@ discreteLog n = first (\k -> (10 ^ k - 1) `divisible` n') [1..]
     n' = toInteger n
 
 main :: IO ()
-main = print
-     . maximumBy (comparing discreteLog)
-     . dropWhile (<= 5)
-     $ primesTo 999
+main = print . maximumBy (comparing discreteLog) . drop 3 $ primesTo 999

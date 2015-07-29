@@ -1,4 +1,5 @@
 import Data.Array.Unboxed
+
 import Primes (divisors)
 
 sumOfAbundantsTo :: Int -> Int -> Bool

@@ -1,4 +1,4 @@
-import Primes
+import Primes (primes)
 
 main :: IO ()
-main = print . (!! 10000) . primesTo $ 125000
+main = print $ primes !! 10000

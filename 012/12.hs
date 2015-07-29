@@ -1,8 +1,5 @@
-import Primes
+import Euler (first, triangulars)
+import Primes (divisors)
 
 main :: IO ()
-main = print
-     . head
-     . filter ((> 500) . length . divisors)
-     . scanl1 (+)
-     $ [1..]
+main = print $ first ((> 500) . length . divisors) triangulars

@@ -11,9 +11,7 @@ weekday y m d = (`mod` 7) $ d + floor (2.6 * m' - 0.2) + e
     c  = y' `div` 100
     e  = y' `mod` 100
     m' = fromIntegral . (`mod` 12) $ m - 2
-    y' = if m == 1 || m == 2
-        then y - 1
-        else y
+    y' = if m == 1 || m == 2 then y - 1 else y
 
 main :: IO ()
 main = print
