@@ -62,6 +62,14 @@ readInt string = read string :: Int
 readInteger :: String -> Integer
 readInteger string = read string :: Integer
 
+-- Like words, but with a predicate function.
+splitBy :: (a -> Bool) -> [a] -> [[a]]
+splitBy p xs = case dropWhile p xs of
+    [] -> []
+    xs' -> x : splitBy p xs''
+      where
+        (x, xs'') = break p xs'
+
 -- The reverse of digits; converts a list of digits to an Int.
 undigits :: [Int] -> Int
 undigits = readInt . map intToDigit
