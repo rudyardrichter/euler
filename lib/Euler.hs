@@ -74,6 +74,7 @@ splitBy p xs = case dropWhile p xs of
       where
         (x, xs'') = break p xs'
 
+-- The list of all triangular numbers.
 triangulars :: [Int]
 triangulars = scanl1 (+) [1..]
 
