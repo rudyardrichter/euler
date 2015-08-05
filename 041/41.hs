@@ -1,13 +1,12 @@
-import Data.List (sort)
+import Data.List (permutations)
 
-import Euler (digits, first)
+import Euler (undigits)
 import Primes (isPrime)
 
-pandigitalPrime :: Int -> Bool
-pandigitalPrime n = pandigital && isPrime n
-  where
-    pandigital = sort ds == take (length ds) [1..9]
-    ds = digits n
-
 main :: IO ()
-main = print . first pandigitalPrime . reverse $ [1000000..9999999]
+main = print
+     . maximum
+     . filter isPrime
+     . map undigits
+     . permutations
+     $ [1..7]

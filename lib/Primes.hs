@@ -11,7 +11,7 @@ module Primes (
     primePowers,
     primes,
     primesArray,
-    primesTo,
+    primesTo
     ) where
 
 import Control.Monad
@@ -20,6 +20,7 @@ import Data.Array.ST
 import Data.Array.Unboxed
 import Data.Bits
 import Data.List (group)
+import Data.Ratio
 import System.Random
 
 import Euler ((|.|), divisible)
@@ -118,15 +119,10 @@ primes = 2 : oddPrimes
 
 isPrime :: Int -> Bool
 isPrime n
-    | n == 1    = False
-    | even n    = n == 2
-    | otherwise = not
-                . any (n `divisible`)
-                . primesTo
-                . floor
-                . sqrt
-                . fromIntegral
-                $ n
+    | n <= 1    = False
+    | otherwise = not . any (n `divisible`) $ [2..n']
+  where
+    n' = floor . sqrt . fromIntegral $ n
 
 factorize :: (Integral a) => a -> [a]
 factorize = loop (2:[3,5..])
