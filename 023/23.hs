@@ -14,9 +14,6 @@ sumOfAbundantsTo bound n = any (abundants !)
     isAbundant n = sum (divisors n) > n
 
 main :: IO ()
-main = print
-     . sum
-     . filter (not . sumOfAbundantsTo bound)
-     $ [1..bound]
+main = print . sum . filter (not . sumOfAbundantsTo bound) $ [1..bound]
   where
     bound = 28123
