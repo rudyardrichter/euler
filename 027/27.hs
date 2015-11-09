@@ -12,7 +12,7 @@ main = print
      . result
      . snd
      . maximumBy (comparing fst)
-     . map (tuple $ length . takeWhile (flip Set.member primes) . evalQF)
+     . map (tuple $ length . takeWhile (`Set.member` primes) . evalQF)
      $ (,) <$> [-1000..1000] <*> [-1000..1000]
   where
     result (b, c) = b * c
