@@ -1,0 +1,11 @@
+[package]
+name = "euler"
+version = "0.1.0"
+authors = ["Rudyard Richter <rudyardrichter@uchicago.edu>"]
+
+[lib]
+name = "euler"
+path = "src/lib/mod.rs"
+
+[dependencies]
+primal = "0.2.0"
