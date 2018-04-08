@@ -56,6 +56,10 @@ pub mod num {
 pub mod prime {
     use primal;
 
+    pub fn primes() -> primal::Primes {
+        primal::Primes::all()
+    }
+
     pub fn nth_prime(n: usize) -> usize {
         primal::StreamingSieve::nth_prime(n)
     }
