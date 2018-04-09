@@ -1,6 +1,6 @@
 extern crate euler;
 
-use euler::prime::factor::factorize;
+use euler::prime::factorize;
 
 fn main() -> () {
     let factors: Vec<(usize, usize)> = factorize(600851475143);

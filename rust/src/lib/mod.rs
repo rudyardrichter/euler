@@ -48,12 +48,63 @@ pub mod num {
         a
     }
 
+    pub trait Factorial {
+        fn factorial(&self) -> usize;
+    }
+
+    impl Factorial for usize {
+        fn factorial(&self) -> usize {
+            (1..*self+1).fold(1, |acc, n| acc * n)
+        }
+    }
+
     pub fn lcm(m: usize, n: usize) -> usize {
         (m * n) / gcd(m, n)
+    }
+
+    pub struct TriangleNumberIterator {
+        // The current triangle number.
+        t: usize,
+        // The next natural number to add.
+        n: usize,
+    }
+
+    impl TriangleNumberIterator {
+        pub fn new() -> Self {
+            TriangleNumberIterator {
+                t: 0,
+                n: 1,
+            }
+        }
+    }
+
+    impl Iterator for TriangleNumberIterator {
+        type Item = usize;
+
+        fn next(&mut self) -> Option<usize> {
+            self.t += self.n;
+            self.n += 1;
+            Some(self.t)
+        }
+    }
+
+    #[cfg(test)]
+    mod test_triangle_number_iterator {
+        use super::TriangleNumberIterator;
+
+        #[test]
+        fn test_first_triangle_numbers() -> () {
+            let t_iter = TriangleNumberIterator::new();
+            assert_eq!(
+                t_iter.take_while(|n| *n <= 10).collect::<Vec<usize>>(),
+                vec![1, 3, 6, 10],
+            );
+        }
     }
 }
 
 pub mod prime {
+    use num::sqrt;
     use primal;
 
     pub fn primes() -> primal::Primes {
@@ -64,12 +115,7 @@ pub mod prime {
         primal::StreamingSieve::nth_prime(n)
     }
 
-    pub mod factor {
-        use num::sqrt;
-        use primal;
-
-        pub fn factorize(n: usize) -> Vec<(usize, usize)> {
-            primal::Sieve::new(sqrt(n)).factor(n).expect("number too large to factor")
-        }
+    pub fn factorize(n: usize) -> Vec<(usize, usize)> {
+        primal::Sieve::new(sqrt(n)).factor(n).expect("number too large to factor")
     }
 }
